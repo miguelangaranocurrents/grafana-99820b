@@ -758,7 +758,9 @@ function normalizeZone(zone: string | Zone): Zone {
   }
 
   const name = normalizeZoneName(zone);
-  if (name === 'UTC') {
+  // moment-timezone keeps the instant in UTC (and only logs) when asked for a zone it has no
+  // data for, e.g. Grafana's 'default' sentinel; an invalid luxon zone would make the date invalid.
+  if (name === 'UTC' || !IANAZone.isValidZone(name)) {
     return FixedOffsetZone.instance(0);
   }
 
