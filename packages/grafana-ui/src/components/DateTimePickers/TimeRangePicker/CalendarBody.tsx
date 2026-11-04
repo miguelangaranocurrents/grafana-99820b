@@ -2,7 +2,7 @@ import { css } from '@emotion/css';
 import { useCallback } from 'react';
 import Calendar, { type CalendarType } from 'react-calendar';
 
-import { type GrafanaTheme2, dateTimeParse, type DateTime, type TimeZone } from '@grafana/data';
+import { type GrafanaTheme2, dateTimeParse, getTimeZone, type DateTime, type TimeZone } from '@grafana/data';
 import { t } from '@grafana/i18n';
 
 import { useStyles2 } from '../../../themes/ThemeContext';
@@ -54,9 +54,11 @@ export function inputToValue(
   let fromAsDate = from.isValid() ? from.toDate() : invalidDateDefault;
   let toAsDate = to.isValid() ? to.toDate() : invalidDateDefault;
 
-  if (timezone) {
-    fromAsDate = adjustDateForReactCalendar(fromAsDate, timezone);
-    toAsDate = adjustDateForReactCalendar(toAsDate, timezone);
+  // resolve the default ('') time zone to the user's one, the same way the from/to values are parsed
+  const resolvedTimeZone = getTimeZone({ timeZone: timezone });
+  if (resolvedTimeZone) {
+    fromAsDate = adjustDateForReactCalendar(fromAsDate, resolvedTimeZone);
+    toAsDate = adjustDateForReactCalendar(toAsDate, resolvedTimeZone);
   }
 
   if (fromAsDate > toAsDate) {
