@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 
 import { type DataFrame, type DataLink, type VariableSuggestion } from '@grafana/data';
 import { Trans } from '@grafana/i18n';
@@ -26,6 +26,8 @@ export const DataLinkEditorModalContent = ({
   showOneClick,
 }: DataLinkEditorModalContentProps) => {
   const [dirtyLink, setDirtyLink] = useState(link);
+  // A new suggestions array on every keystroke would reconfigure the CodeMirror inputs while typing
+  const suggestions = useMemo(() => getSuggestions(), [getSuggestions]);
   return (
     <>
       <DataLinkEditor
@@ -35,7 +37,7 @@ export const DataLinkEditorModalContent = ({
         onChange={(index, link) => {
           setDirtyLink(link);
         }}
-        suggestions={getSuggestions()}
+        suggestions={suggestions}
         showOneClick={showOneClick}
       />
       <Modal.ButtonRow>
