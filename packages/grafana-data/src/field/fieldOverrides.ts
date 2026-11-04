@@ -58,9 +58,11 @@ export function findNumericFieldMinMax(data: DataFrame[]): NumericRange {
         const vals = field.values;
 
         for (let i = 0; i < vals.length; i++) {
-          let v = vals[i];
+          // number fields can still carry numeric strings (e.g. a reduced text column),
+          // the range must stay numeric for consumers doing arithmetic / toFixed on it
+          let v = typeof vals[i] === 'string' ? Number(vals[i]) : vals[i];
 
-          if (v === null) {
+          if (v == null) {
             if (nullAsZero) {
               if (min! > 0) {
                 min = 0;
